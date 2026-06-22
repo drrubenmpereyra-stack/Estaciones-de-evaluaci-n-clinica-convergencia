@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estación de Evaluación</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <style>
+        body { background: #050508; color: #d4af37; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .contenido { max-width: 600px; padding: 40px; border: 1px solid #d4af37; border-radius: 15px; background: #0d1117; text-align: center; }
+        .btn { padding: 15px 30px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; margin: 10px; }
+        .btn:hover { background: #d4af37; color: #000; }
+        #multimedia-container { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="contenido">
+        <h1 id="titulo">Cargando...</h1>
+        <p id="descripcion"></p>
+        
+        <div id="multimedia-container"></div>
+
+        <button class="btn" onclick="finalizar()">Finalizar Estación y Validar</button>
+        <br><a href="index.html">⬅ Volver al Mapa</a>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyD47_2UtWLFI_VRVvvXVAqn4zZzZ4d1ggo", projectId: "av-clinica-convergencia", authDomain: "av-clinica-convergencia.firebaseapp.com", databaseURL: "https://av-clinica-convergencia-default-rtdb.firebaseio.com", storageBucket: "av-clinica-convergencia.firebasestorage.app", messagingSenderId: "939404425675", appId: "1:939404425675:web:8cfae157099efabd741e4e" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const id = new URLSearchParams(window.location.search).get('id');
+        const user = localStorage.getItem("usuarioActual") || "INVITADO";
+
+        const programas = [{id:1, titulo:"Cartografía de la Intersubjetividad", desc:"Alianza terapéutica y eje HPA."}, {id:2, titulo:"La Memoria Traumática", desc:"Reconsolidación de huella mnémica."}, {id:3, titulo:"Circuitos de Recompensa", desc:"Núcleo Accumbens y deseo."}, {id:4, titulo:"El Marcador Somático", desc:"Neuronas espejo y contratransferencia."}, {id:5, titulo:"Neurobiología de la Repetición", desc:"Ganglios basales y pulsión."}, {id:6, titulo:"Plasticidad Simbólica", desc:"BDNF y reconfiguración cortical."}, {id:7, titulo:"Arquitectura del Sueño", desc:"Procesamiento REM y alucinación."}, {id:8, titulo:"El Ello Somático", desc:"Desregulación autonómica."}, {id:9, titulo:"Focalización Límbica", desc:"Contención afectiva y control inhibitorio."}, {id:10, titulo:"Ética y Cerebro Digital", desc:"Escucha analítica vs dopamina."}];
+
+        const mod = programas.find(p => p.id == id);
+        document.getElementById('titulo').textContent = mod.titulo;
+        document.getElementById('descripcion').textContent = mod.desc;
+
+        // Inserción de recursos para la Estación 1
+        if (id == 1) {
+            document.getElementById('multimedia-container').innerHTML = `
+                <video src="https://github.com/drrubenmpereyra-stack/video-trazado-estacion-1/raw/refs/heads/main/video_traazado.mp4" width="100%" controls autoplay loop muted playsinline></video>
+                <audio src="https://github.com/drrubenmpereyra-stack/audio-estacion-1/raw/refs/heads/main/Audio1.mp4" controls style="width:100%; margin-top:10px;"></audio>
+            `;
+        }
+
+        async function finalizar() {
+            await db.collection("progreso").doc(user).set({ [`estacion_${id}`]: true }, { merge: true });
+            alert("¡Estación completada!");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
