@@ -39,7 +39,6 @@
 
     const container = document.getElementById('estaciones');
     
-    // CORRECCIÓN: Limpiamos antes de dibujar para que no se dupliquen
     container.innerHTML = ''; 
 
     estaciones.forEach(est => {
@@ -49,9 +48,12 @@
         div.style.top = est.y + '%';
         div.innerHTML = `<span>${est.id}</span> ${est.nombre}`;
         
-        // CORRECCIÓN: El enlace ahora lleva el ID correcto
         div.onclick = () => {
-            window.location.href = `encuentro.html?id=${est.id}`;
+            if (est.id === 1) {
+                window.location.href = "https://drrubenmpereyra-stack.github.io/estacion-1-evaluacion-clinica/";
+            } else {
+                window.location.href = `encuentro.html?id=${est.id}`;
+            }
         };
         container.appendChild(div);
     });
