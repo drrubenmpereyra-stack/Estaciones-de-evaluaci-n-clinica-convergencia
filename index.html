@@ -10,7 +10,7 @@
         .contenido { max-width: 600px; padding: 40px; border: 1px solid #d4af37; border-radius: 15px; background: #0d1117; text-align: center; }
         .btn { padding: 15px 30px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; margin: 10px; }
         .btn:hover { background: #d4af37; color: #000; }
-        video, audio { width: 100%; margin-top: 15px; }
+        video, audio { width: 100%; margin-top: 20px; border: 1px solid #d4af37; }
     </style>
 </head>
 <body>
@@ -20,45 +20,47 @@
         
         <div id="multimedia-container"></div>
 
-        <button class="btn" onclick="finalizar()">Finalizar Estación y Validar</button>
-        <br><a href="index.html" style="color:#d4af37;">⬅ Volver al Mapa</a>
+        <button id="btn-finalizar" class="btn">Finalizar Estación y Validar</button>
+        <br><a href="estacion_integracion_sinaptica.html" style="color: #d4af37;">⬅ Volver al Mapa</a>
     </div>
 
     <script>
-        // Configuración Firebase
+        // 1. Configuración Firebase
         const firebaseConfig = { apiKey: "AIzaSyD47_2UtWLFI_VRVvvXVAqn4zZzZ4d1ggo", projectId: "av-clinica-convergencia", authDomain: "av-clinica-convergencia.firebaseapp.com", databaseURL: "https://av-clinica-convergencia-default-rtdb.firebaseio.com", storageBucket: "av-clinica-convergencia.firebasestorage.app", messagingSenderId: "939404425675", appId: "1:939404425675:web:8cfae157099efabd741e4e" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        
+
+        // 2. Variables de entorno
         const params = new URLSearchParams(window.location.search);
         const id = params.get('id');
         const user = localStorage.getItem("usuarioActual") || "INVITADO";
 
+        // 3. Datos de estaciones
         const programas = [{id:1, titulo:"Cartografía de la Intersubjetividad", desc:"Alianza terapéutica y eje HPA."}];
         const mod = programas.find(p => p.id == id) || {titulo: "Estación", desc: ""};
         
         document.getElementById('titulo').textContent = mod.titulo;
         document.getElementById('descripcion').textContent = mod.desc;
 
-        // Renderizado directo del contenido para la Estación 1
+        // 4. Inyección de multimedia para Estación 1
         if (id == "1") {
-            const container = document.getElementById('multimedia-container');
-            container.innerHTML = `
-                <video src="https://github.com/drrubenmpereyra-stack/video-trazado-estacion-1/raw/refs/heads/main/video_traazado.mp4" controls autoplay loop muted playsinline></video>
-                <audio src="https://github.com/drrubenmpereyra-stand/audio-estacion-1/raw/refs/heads/main/Audio1.mp4" controls></audio>
+            document.getElementById('multimedia-container').innerHTML = `
+                <video controls autoplay loop muted playsinline src="https://github.com/drrubenmpereyra-stack/video-trazado-estacion-1/raw/refs/heads/main/video_traazado.mp4"></video>
+                <audio controls src="https://github.com/drrubenmpereyra-stack/audio-estacion-1/raw/refs/heads/main/Audio1.mp4"></audio>
             `;
         }
 
-        async function finalizar() {
+        // 5. Comunicación Firebase
+        document.getElementById('btn-finalizar').addEventListener('click', async () => {
             try {
                 await db.collection("progreso").doc(user).set({ [`estacion_${id}`]: true }, { merge: true });
-                alert("¡Estación completada!");
-                window.location.href = "index.html";
-            } catch(e) {
-                console.error(e);
-                window.location.href = "index.html";
+                alert("Progreso guardado.");
+                window.location.href = "estacion_integracion_sinaptica.html";
+            } catch (err) {
+                console.error("Firebase Error:", err);
+                alert("Error de conexión con base de datos.");
             }
-        }
+        });
     </script>
 </body>
 </html>
